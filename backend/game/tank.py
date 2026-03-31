@@ -108,9 +108,9 @@ class Tank:
             
         # 根据方向计算实际伤害
         if from_direction == 'forward':
-            actual_damage = GameConfig.DAMAGE_BACK
-        elif from_direction == 'backward':
             actual_damage = GameConfig.DAMAGE_FRONT
+        elif from_direction == 'backward':
+            actual_damage = GameConfig.DAMAGE_BACK
         else:  # left 或 right
             actual_damage = GameConfig.DAMAGE_SIDE
             
