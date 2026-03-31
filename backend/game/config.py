@@ -41,7 +41,7 @@ class GameConfig:
     MISSILE_BLIND_RANGE = 2  # 导弹传感器盲区
     
     # 导弹配置
-    MISSILE_SPEED = 1  # 相对于坦克速度的倍数
+    MISSILE_SPEED = 2  # 相对于坦克速度的倍数
     
     # 游戏配置
     MAX_STEPS = 1000
