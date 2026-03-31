@@ -1,0 +1,1210 @@
+/* ========== TankBattle 赛博朋克风格 V3 ========== */
+
+/* ========== CSS 变量 ========== */
+:root {
+    /* 主色调 */
+    --color-bg-deep: #080c14;
+    --color-bg: #0d1321;
+    --color-surface: #121a28;
+    --color-surface-light: #1a2538;
+    --color-border: #1e3050;
+    
+    /* 霓虹强调色 */
+    --neon-blue: #00d4ff;
+    --neon-red: #ff3366;
+    --neon-green: #00ff88;
+    --neon-purple: #bf5fff;
+    --neon-orange: #ff9500;
+    --neon-yellow: #ffd700;
+    
+    /* 文字颜色 */
+    --text-primary: #e8f4ff;
+    --text-secondary: #7eb8da;
+    --text-muted: #4a6a8a;
+    
+    /* 渐变 */
+    --gradient-blue: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+    --gradient-red: linear-gradient(135deg, #ff3366 0%, #cc0044 100%);
+    
+    /* 字体 */
+    --font-display: 'Orbitron', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-body: 'Inter', -apple-system, sans-serif;
+    
+    /* 圆角 */
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 10px;
+}
+
+/* ========== 基础重置 ========== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-body);
+    background: var(--color-bg-deep);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--color-bg); }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--neon-blue); }
+
+/* ========== 动画 ========== */
+@keyframes glow-pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+@keyframes flash {
+    0%, 50%, 100% { opacity: 1; }
+    25%, 75% { opacity: 0.5; }
+}
+
+/* ========== 背景效果 ========== */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: 
+        radial-gradient(ellipse at 20% 50%, rgba(255, 51, 102, 0.05) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 50%, rgba(0, 212, 255, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+/* ========== 主容器 ========== */
+.app-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 10px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: 100vh;
+    max-height: 100vh;
+}
+
+/* ========== 顶部栏 ========== */
+.top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 8px 16px;
+    background: linear-gradient(180deg, var(--color-surface) 0%, var(--color-bg) 100%);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    flex-shrink: 0;
+}
+
+.top-left {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+}
+
+.title {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 800;
+    letter-spacing: 3px;
+    background: linear-gradient(135deg, var(--neon-blue) 0%, var(--neon-purple) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.subtitle {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+}
+
+.top-center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.score-display {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.team-score {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.team-label {
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.red-score .team-label { color: var(--neon-red); }
+.blue-score .team-label { color: var(--neon-blue); }
+
+.score-value {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.red-score .score-value {
+    color: var(--neon-red);
+    text-shadow: 0 0 10px rgba(255, 51, 102, 0.5);
+}
+
+.blue-score .score-value {
+    color: var(--neon-blue);
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
+
+.vs-badge {
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    padding: 4px 10px;
+    background: var(--color-bg-deep);
+    border-radius: var(--radius-sm);
+    letter-spacing: 1px;
+}
+
+.top-right {
+    display: flex;
+    align-items: center;
+}
+
+.status-display {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.round-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.round-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+}
+
+.round-value {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--neon-purple);
+    text-shadow: 0 0 12px rgba(191, 95, 255, 0.5);
+    min-width: 40px;
+    text-align: center;
+}
+
+.game-state {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--neon-green);
+    letter-spacing: 1px;
+    padding: 4px 10px;
+    background: rgba(0, 255, 136, 0.1);
+    border-radius: var(--radius-sm);
+}
+
+/* ========== 主体布局：三栏 ========== */
+.main-content {
+    display: flex;
+    gap: 12px;
+    flex: 1;
+    min-height: 0;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+/* ========== 左右侧边栏：坦克信息 ========== */
+.team-sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    height: fit-content;
+    min-height: 694px; /* 与战场容器高度一致 (672 + padding) */
+}
+
+.team-red-side { border-top: 2px solid var(--neon-red); }
+.team-blue-side { border-top: 2px solid var(--neon-blue); }
+
+.team-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.team-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+
+.team-dot.red { background: var(--neon-red); box-shadow: 0 0 6px var(--neon-red); }
+.team-dot.blue { background: var(--neon-blue); box-shadow: 0 0 6px var(--neon-blue); }
+
+.team-title {
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.team-red-side .team-title { color: var(--neon-red); }
+.team-blue-side .team-title { color: var(--neon-blue); }
+
+/* 坦克列表 */
+.team-sidebar .tank-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+/* 坦克卡片 */
+.tank-card {
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: var(--radius-md);
+    padding: 10px 12px;
+    border: 1px solid var(--color-border);
+    transition: all 0.2s ease;
+}
+
+.tank-card:hover {
+    background: rgba(0, 0, 0, 0.35);
+}
+
+.tank-card.dead {
+    opacity: 0.4;
+    filter: grayscale(70%);
+}
+
+.tank-header {
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.team-red-side .tank-header { color: var(--neon-red); }
+.team-blue-side .tank-header { color: var(--neon-blue); }
+
+.tank-header::before {
+    content: '▸';
+    color: var(--neon-green);
+    font-size: 7px;
+}
+
+.tank-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* 状态条 */
+.stat-bar {
+    display: grid;
+    grid-template-columns: 32px 1fr 40px;
+    align-items: center;
+    gap: 6px;
+}
+
+.stat-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-muted);
+}
+
+.bar-track {
+    height: 6px;
+    background: var(--color-bg-deep);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.4s ease;
+}
+
+.health-bar .bar-fill {
+    background: linear-gradient(90deg, var(--neon-red), #ff6699);
+}
+
+.health-bar .bar-fill.low {
+    animation: flash 0.5s ease infinite;
+}
+
+.energy-bar .bar-fill {
+    background: linear-gradient(90deg, var(--neon-blue), #66e0ff);
+}
+
+.stat-value {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-align: right;
+    color: var(--text-primary);
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-secondary);
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.stat-row .on { color: var(--neon-green); }
+.stat-row .off { color: var(--text-muted); }
+
+/* 炮弹条 */
+.missile-bar .bar-fill {
+    background: linear-gradient(90deg, var(--neon-purple), #d97fff);
+}
+
+/* 状态已摧毁标签 */
+.tank-header .status-dead {
+    color: var(--neon-red);
+    font-size: 9px;
+    padding: 2px 6px;
+    background: rgba(255, 51, 102, 0.15);
+    border-radius: 3px;
+    margin-left: auto;
+}
+
+/* 坦克信息网格 */
+.tank-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 6px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-sm);
+}
+
+.info-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--text-muted);
+}
+
+.info-value {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-primary);
+}
+
+.direction-icon {
+    font-size: 14px;
+    color: var(--neon-yellow);
+    text-shadow: 0 0 6px rgba(255, 215, 0, 0.5);
+}
+
+/* 坦克状态行 */
+.tank-status-row {
+    display: flex;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.status-badge {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 5px 6px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    transition: all 0.2s ease;
+}
+
+.status-badge.active {
+    background: rgba(0, 255, 136, 0.1);
+    border-color: var(--neon-green);
+    color: var(--neon-green);
+}
+
+.status-badge .icon-shield,
+.status-badge .icon-radar {
+    font-size: 10px;
+}
+
+/* 补给站提示 */
+.station-alert {
+    display: flex;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.station-badge {
+    flex: 1;
+    text-align: center;
+    padding: 4px 6px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    border-radius: var(--radius-sm);
+    animation: glow-pulse 1.5s ease infinite;
+}
+
+.station-badge.health {
+    background: rgba(255, 51, 102, 0.2);
+    border: 1px solid var(--neon-red);
+    color: var(--neon-red);
+}
+
+.station-badge.energy {
+    background: rgba(255, 149, 0, 0.2);
+    border: 1px solid var(--neon-orange);
+    color: var(--neon-orange);
+}
+
+/* 队伍汇总卡片 */
+.team-summary-card {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.2));
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    border-top: 2px solid var(--neon-purple);
+}
+
+.team-red-side .team-summary-card {
+    border-top-color: var(--neon-red);
+}
+
+.team-blue-side .team-summary-card {
+    border-top-color: var(--neon-blue);
+}
+
+.summary-header {
+    font-family: var(--font-display);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 6px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-sm);
+}
+
+.summary-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--text-muted);
+}
+
+.summary-value {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.summary-value.health-color { color: var(--neon-red); }
+.summary-value.energy-color { color: var(--neon-blue); }
+.summary-value.missile-color { color: var(--neon-purple); }
+
+/* 平均生命条 */
+.summary-bar {
+    display: grid;
+    grid-template-columns: 50px 1fr 36px;
+    align-items: center;
+    gap: 6px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.summary-avg-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--text-muted);
+}
+
+.mini-bar-track {
+    height: 4px;
+    background: var(--color-bg-deep);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.mini-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--neon-green), #66ff99);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+}
+
+.summary-avg-value {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--neon-green);
+    text-align: right;
+}
+
+/* ========== 战场区域 ========== */
+.battlefield-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+    width: 700px;
+    flex-shrink: 0;
+}
+
+.battlefield-container {
+    position: relative;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+#gameCanvas {
+    display: block;
+    border-radius: var(--radius-sm);
+}
+
+/* 加载覆盖层 */
+.loading-overlay {
+    position: absolute;
+    inset: 10px;
+    background: rgba(8, 12, 20, 0.9);
+    border-radius: var(--radius-sm);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    z-index: 10;
+    backdrop-filter: blur(5px);
+}
+
+.loading-overlay.hidden {
+    display: none;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--color-border);
+    border-top-color: var(--neon-blue);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.loading-text {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--neon-blue);
+}
+
+.loading-progress {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+/* 游戏覆盖层 */
+.game-overlay {
+    position: absolute;
+    inset: 10px;
+    background: rgba(8, 12, 20, 0.95);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.4s ease;
+    backdrop-filter: blur(8px);
+}
+
+.game-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.98);
+}
+
+.overlay-content {
+    text-align: center;
+}
+
+.overlay-content h2 {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    letter-spacing: 3px;
+    margin-bottom: 6px;
+    background: var(--gradient-blue);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.overlay-content p {
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+    font-size: 11px;
+}
+
+/* ========== 控制面板 ========== */
+.control-panel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 12px 20px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.control-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+/* 按钮 */
+.btn {
+    font-family: var(--font-display);
+    padding: 8px 14px;
+    border: 1px solid;
+    border-radius: var(--radius-md);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: transparent;
+}
+
+.btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.btn-primary {
+    border-color: var(--neon-blue);
+    color: var(--neon-blue);
+}
+.btn-primary:hover:not(:disabled) {
+    background: var(--neon-blue);
+    color: var(--color-bg-deep);
+    box-shadow: 0 0 12px rgba(0, 212, 255, 0.4);
+}
+
+.btn-success {
+    border-color: var(--neon-green);
+    color: var(--neon-green);
+}
+.btn-success:hover:not(:disabled) {
+    background: var(--neon-green);
+    color: var(--color-bg-deep);
+    box-shadow: 0 0 12px rgba(0, 255, 136, 0.4);
+}
+
+.btn-warning {
+    border-color: var(--neon-orange);
+    color: var(--neon-orange);
+}
+.btn-warning:hover:not(:disabled) {
+    background: var(--neon-orange);
+    color: var(--color-bg-deep);
+    box-shadow: 0 0 12px rgba(255, 149, 0, 0.4);
+}
+
+.btn-info {
+    border-color: var(--neon-purple);
+    color: var(--neon-purple);
+}
+.btn-info:hover:not(:disabled) {
+    background: var(--neon-purple);
+    color: var(--color-bg-deep);
+    box-shadow: 0 0 12px rgba(191, 95, 255, 0.4);
+}
+
+.btn-danger {
+    border-color: var(--neon-red);
+    color: var(--neon-red);
+}
+.btn-danger:hover:not(:disabled) {
+    background: var(--neon-red);
+    color: var(--color-bg-deep);
+    box-shadow: 0 0 12px rgba(255, 51, 102, 0.4);
+}
+
+.control-settings {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-left: 16px;
+    border-left: 1px solid var(--color-border);
+}
+
+.speed-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.speed-control label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-muted);
+}
+
+.speed-control input[type="range"] {
+    width: 100px;
+    height: 4px;
+    -webkit-appearance: none;
+    background: var(--color-border);
+    border-radius: 2px;
+}
+
+.speed-control input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    background: var(--neon-blue);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 8px var(--neon-blue);
+}
+
+#speedValue {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--neon-blue);
+    min-width: 45px;
+}
+
+.auto-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 6px 12px;
+    background: rgba(0, 255, 136, 0.1);
+    border: 1px solid var(--neon-green);
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+}
+
+.auto-checkbox:hover {
+    background: rgba(0, 255, 136, 0.2);
+}
+
+.auto-checkbox input {
+    accent-color: var(--neon-green);
+    width: 14px;
+    height: 14px;
+}
+
+.auto-checkbox span {
+    color: var(--neon-green);
+    font-weight: 500;
+}
+
+/* ========== 图例栏 ========== */
+.legend-bar {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    padding: 6px 12px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--text-muted);
+}
+
+.leg-icon {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+}
+
+.leg-icon.open { background: #1a2030; border: 1px solid var(--color-border); }
+.leg-icon.tree { background: var(--neon-green); }
+.leg-icon.stone { background: #6b7280; }
+.leg-icon.health { background: var(--neon-red); }
+.leg-icon.energy { background: var(--neon-orange); }
+.leg-icon.ammo { background: var(--neon-purple); }
+
+/* ========== 日志区域（在游戏界面下方）========== */
+.log-section {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    border-left: 3px solid var(--neon-green);
+    padding: 10px 14px;
+    width: 100%;
+    box-sizing: border-box;
+    max-height: 120px;
+}
+
+.log-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.log-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--neon-green);
+    box-shadow: 0 0 8px var(--neon-green);
+}
+
+.log-title {
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: var(--neon-green);
+}
+
+.event-log {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    overflow-y: auto;
+    max-height: 70px;
+    padding: 4px 0;
+    font-family: var(--font-mono);
+    font-size: 11px;
+}
+
+.event-item {
+    flex-shrink: 0;
+    padding: 5px 10px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    white-space: nowrap;
+    border-left: 2px solid var(--color-border);
+}
+
+.event-item:hover {
+    background: rgba(0, 212, 255, 0.1);
+    border-left-color: var(--neon-blue);
+}
+
+.event-item.important {
+    color: var(--neon-orange);
+    border-left-color: var(--neon-orange);
+    background: rgba(255, 149, 0, 0.1);
+}
+
+.event-item.danger {
+    color: var(--neon-red);
+    border-left-color: var(--neon-red);
+    background: rgba(255, 51, 102, 0.1);
+}
+
+.event-item.success {
+    color: var(--neon-green);
+    border-left-color: var(--neon-green);
+}
+
+/* ========== Toast 通知 ========== */
+.toast-container {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.toast {
+    padding: 12px 24px;
+    border-radius: var(--radius-md);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    animation: toastSlideIn 0.3s ease, toastFadeOut 0.3s ease 2.7s forwards;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    border: 1px solid;
+    backdrop-filter: blur(8px);
+}
+
+.toast.info {
+    background: rgba(0, 212, 255, 0.15);
+    border-color: var(--neon-blue);
+    color: var(--neon-blue);
+}
+
+.toast.success {
+    background: rgba(0, 255, 136, 0.15);
+    border-color: var(--neon-green);
+    color: var(--neon-green);
+}
+
+.toast.warning {
+    background: rgba(255, 149, 0, 0.15);
+    border-color: var(--neon-orange);
+    color: var(--neon-orange);
+}
+
+.toast.error {
+    background: rgba(255, 51, 102, 0.15);
+    border-color: var(--neon-red);
+    color: var(--neon-red);
+}
+
+@keyframes toastSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes toastFadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+/* Loading 指示器 */
+.loading-indicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    z-index: 100;
+}
+
+.loading-indicator.hidden {
+    display: none;
+}
+
+.loading-spinner-large {
+    width: 50px;
+    height: 50px;
+    border: 3px solid var(--color-border);
+    border-top-color: var(--neon-blue);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-indicator .loading-text {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--neon-blue);
+    letter-spacing: 1px;
+}
+
+/* ========== 胜利动画 ========== */
+.victory-red .overlay-content h2 {
+    background: var(--gradient-red);
+    -webkit-background-clip: text;
+}
+
+.victory-blue .overlay-content h2 {
+    background: var(--gradient-blue);
+    -webkit-background-clip: text;
+}
+
+/* ========== 响应式设计 ========== */
+@media (max-width: 1200px) {
+    .team-sidebar {
+        width: 180px;
+        min-height: auto;
+    }
+    
+    .battlefield-section {
+        width: 600px;
+    }
+    
+    #gameCanvas {
+        width: 560px;
+        height: 560px;
+    }
+}
+
+@media (max-width: 1050px) {
+    .main-content {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .team-sidebar {
+        width: 100%;
+        max-width: 700px;
+        min-height: auto;
+        flex-direction: row;
+        gap: 8px;
+    }
+    
+    .team-sidebar .tank-list {
+        flex-direction: row;
+        flex: 1;
+        overflow-x: auto;
+    }
+    
+    .tank-card {
+        min-width: 180px;
+    }
+    
+    .team-header {
+        writing-mode: vertical-rl;
+        transform: rotate(180deg);
+        margin-bottom: 0;
+        margin-right: 8px;
+        padding-bottom: 0;
+        padding-right: 8px;
+        border-bottom: none;
+        border-right: 1px solid var(--color-border);
+    }
+    
+    .battlefield-section {
+        width: 100%;
+        max-width: 700px;
+    }
+}
+
+@media (max-width: 700px) {
+    .app-container {
+        padding: 8px;
+    }
+    
+    .top-bar {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .title {
+        font-size: 1.2rem;
+    }
+    
+    .control-panel {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .control-settings {
+        border-left: none;
+        padding-left: 0;
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .legend-bar {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    #gameCanvas {
+        width: 100%;
+        height: auto;
+        max-width: 400px;
+    }
+    
+    .tank-card {
+        min-width: 150px;
+    }
+}

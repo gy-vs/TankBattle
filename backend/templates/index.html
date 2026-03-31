@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TankBattle - 坦克对战仿真</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部栏：标题 + 得分 + 状态 -->
+        <header class="top-bar">
+            <div class="top-left">
+                <h1 class="title">TANKBATTLE</h1>
+                <span class="subtitle">战术对战仿真</span>
+            </div>
+            <div class="top-center">
+                <div class="score-display">
+                    <div class="team-score red-score">
+                        <span class="team-label">RED</span>
+                        <span class="score-value" id="redAlive">3/3</span>
+                    </div>
+                    <div class="vs-badge">VS</div>
+                    <div class="team-score blue-score">
+                        <span class="score-value" id="blueAlive">3/3</span>
+                        <span class="team-label">BLUE</span>
+                    </div>
+                </div>
+            </div>
+            <div class="top-right">
+                <div class="status-display">
+                    <div class="round-info">
+                        <span class="round-label">ROUND</span>
+                        <span class="round-value" id="clockValue">0</span>
+                    </div>
+                    <div class="game-state" id="gameState">等待初始化</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- 主体：三栏布局 -->
+        <main class="main-content">
+            <!-- 左侧：红方坦克 -->
+            <aside class="team-sidebar team-red-side">
+                <div class="team-header">
+                    <span class="team-dot red"></span>
+                    <span class="team-title">红方部队</span>
+                </div>
+                <div class="tank-list" id="redTeamInfo">
+                    <!-- 动态生成 -->
+                </div>
+            </aside>
+
+            <!-- 中间：战场 -->
+            <section class="battlefield-section">
+                <div class="battlefield-container">
+                    <div class="canvas-wrapper">
+                        <canvas id="gameCanvas" width="672" height="672"></canvas>
+                    </div>
+                    <!-- 加载状态覆盖层 -->
+                    <div class="loading-overlay hidden" id="loadingOverlay">
+                        <div class="loading-spinner"></div>
+                        <div class="loading-text" id="loadingText">正在加载</div>
+                        <div class="loading-progress" id="loadingProgress"></div>
+                    </div>
+                    <!-- 游戏状态覆盖层 -->
+                    <div class="game-overlay" id="gameOverlay">
+                        <div class="overlay-content">
+                            <h2 id="overlayTitle">系统就绪</h2>
+                            <p id="overlayMessage">// 点击初始化开始</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 控制面板 -->
+                <div class="control-panel">
+                    <div class="control-buttons">
+                        <button class="btn btn-primary" id="btnInit">初始化</button>
+                        <button class="btn btn-success" id="btnStart" disabled>开始</button>
+                        <button class="btn btn-warning" id="btnPause" disabled>暂停</button>
+                        <button class="btn btn-info" id="btnStep" disabled>单步</button>
+                        <button class="btn btn-danger" id="btnReset" disabled>重置</button>
+                    </div>
+                    <div class="control-settings">
+                        <div class="speed-control">
+                            <label>速度</label>
+                            <input type="range" id="speedSlider" min="100" max="2000" value="500">
+                            <span id="speedValue">500ms</span>
+                        </div>
+                        <label class="auto-checkbox">
+                            <input type="checkbox" id="autoRun">
+                            <span>自动运行</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 图例 -->
+                <div class="legend-bar">
+                    <span class="legend-item"><i class="leg-icon open"></i>空地</span>
+                    <span class="legend-item"><i class="leg-icon tree"></i>树木</span>
+                    <span class="legend-item"><i class="leg-icon stone"></i>岩石</span>
+                    <span class="legend-item"><i class="leg-icon health"></i>维修站</span>
+                    <span class="legend-item"><i class="leg-icon energy"></i>能量站</span>
+                    <span class="legend-item"><i class="leg-icon ammo"></i>弹药箱</span>
+                </div>
+
+                <!-- 战斗日志（移到游戏界面下方）-->
+                <div class="log-section">
+                    <div class="log-header">
+                        <span class="log-dot"></span>
+                        <span class="log-title">战斗日志</span>
+                    </div>
+                    <div class="event-log" id="eventLog">
+                        <div class="event-item">// 等待初始化...</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 右侧：蓝方坦克 -->
+            <aside class="team-sidebar team-blue-side">
+                <div class="team-header">
+                    <span class="team-dot blue"></span>
+                    <span class="team-title">蓝方部队</span>
+                </div>
+                <div class="tank-list" id="blueTeamInfo">
+                    <!-- 动态生成 -->
+                </div>
+            </aside>
+        </main>
+    </div>
+
+    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+    <script src="/static/js/renderer.js"></script>
+    <script src="/static/js/game.js"></script>
+</body>
+</html>

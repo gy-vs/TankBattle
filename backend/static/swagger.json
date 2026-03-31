@@ -1,0 +1,407 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "TankBattle API",
+    "description": "坦克对战仿真游戏 API 文档。提供 REST API 和 WebSocket 事件接口说明。",
+    "version": "1.0.0",
+    "contact": {
+      "name": "TankBattle Team"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "本地开发服务器"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "主页",
+        "description": "返回游戏主页面",
+        "tags": ["页面"],
+        "responses": {
+          "200": {
+            "description": "HTML 页面"
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "健康检查",
+        "description": "检查服务器运行状态",
+        "tags": ["系统"],
+        "responses": {
+          "200": {
+            "description": "服务器健康状态",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "healthy"
+                    },
+                    "service": {
+                      "type": "string",
+                      "example": "TankBattle"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/config": {
+      "get": {
+        "summary": "获取游戏配置",
+        "description": "返回游戏的各项配置参数",
+        "tags": ["游戏"],
+        "responses": {
+          "200": {
+            "description": "游戏配置信息",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameConfig"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "GameConfig": {
+        "type": "object",
+        "properties": {
+          "map": {
+            "type": "object",
+            "properties": {
+              "width": {
+                "type": "integer",
+                "example": 14
+              },
+              "height": {
+                "type": "integer",
+                "example": 14
+              }
+            }
+          },
+          "tank": {
+            "type": "object",
+            "properties": {
+              "initialHealth": {
+                "type": "integer",
+                "example": 1000
+              },
+              "maxHealth": {
+                "type": "integer",
+                "example": 1000
+              },
+              "initialEnergy": {
+                "type": "integer",
+                "example": 1000
+              },
+              "maxEnergy": {
+                "type": "integer",
+                "example": 1000
+              },
+              "initialMissiles": {
+                "type": "integer",
+                "example": 20
+              },
+              "maxMissiles": {
+                "type": "integer",
+                "example": 20
+              }
+            }
+          },
+          "damage": {
+            "type": "object",
+            "properties": {
+              "front": {
+                "type": "integer",
+                "description": "正面受击伤害",
+                "example": 200
+              },
+              "side": {
+                "type": "integer",
+                "description": "侧面受击伤害",
+                "example": 300
+              },
+              "back": {
+                "type": "integer",
+                "description": "背面受击伤害",
+                "example": 400
+              }
+            }
+          },
+          "game": {
+            "type": "object",
+            "properties": {
+              "maxSteps": {
+                "type": "integer",
+                "example": 1000
+              },
+              "tanksPerTeam": {
+                "type": "integer",
+                "example": 3
+              }
+            }
+          }
+        }
+      },
+      "Tank": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "坦克唯一标识"
+          },
+          "x": {
+            "type": "integer",
+            "description": "X 坐标"
+          },
+          "y": {
+            "type": "integer",
+            "description": "Y 坐标"
+          },
+          "direction": {
+            "type": "string",
+            "enum": ["north", "east", "south", "west"],
+            "description": "朝向"
+          },
+          "team": {
+            "type": "string",
+            "enum": ["red", "blue"],
+            "description": "所属队伍"
+          },
+          "health": {
+            "type": "integer",
+            "description": "当前生命值"
+          },
+          "energy": {
+            "type": "integer",
+            "description": "当前能量值"
+          },
+          "missiles": {
+            "type": "integer",
+            "description": "当前炮弹数"
+          },
+          "shieldOn": {
+            "type": "boolean",
+            "description": "护盾是否开启"
+          },
+          "radarOn": {
+            "type": "boolean",
+            "description": "雷达是否开启"
+          },
+          "radarSetting": {
+            "type": "integer",
+            "description": "雷达探测范围设置 (1-14)"
+          },
+          "alive": {
+            "type": "boolean",
+            "description": "是否存活"
+          }
+        }
+      },
+      "Missile": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "导弹唯一标识"
+          },
+          "x": {
+            "type": "integer",
+            "description": "X 坐标"
+          },
+          "y": {
+            "type": "integer",
+            "description": "Y 坐标"
+          },
+          "direction": {
+            "type": "string",
+            "enum": ["north", "east", "south", "west"],
+            "description": "飞行方向"
+          },
+          "ownerId": {
+            "type": "integer",
+            "description": "发射者坦克ID"
+          },
+          "ownerTeam": {
+            "type": "string",
+            "description": "发射者所属队伍"
+          }
+        }
+      },
+      "GameState": {
+        "type": "object",
+        "properties": {
+          "clock": {
+            "type": "integer",
+            "description": "当前回合数"
+          },
+          "state": {
+            "type": "string",
+            "enum": ["waiting", "running", "paused", "finished"],
+            "description": "游戏状态"
+          },
+          "map": {
+            "type": "object",
+            "description": "地图数据"
+          },
+          "tanks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Tank"
+            },
+            "description": "所有坦克列表"
+          },
+          "missiles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Missile"
+            },
+            "description": "当前导弹列表"
+          },
+          "events": {
+            "type": "array",
+            "description": "最近的游戏事件"
+          },
+          "winner": {
+            "type": "string",
+            "nullable": true,
+            "description": "获胜方 (red/blue/draw)"
+          }
+        }
+      },
+      "SensorData": {
+        "type": "object",
+        "description": "传感器数据结构",
+        "properties": {
+          "blocked": {
+            "type": "object",
+            "description": "障碍传感器 - 检测四个方向是否有障碍",
+            "properties": {
+              "forward": { "type": "string", "enum": ["yes", "no"] },
+              "backward": { "type": "string", "enum": ["yes", "no"] },
+              "left": { "type": "string", "enum": ["yes", "no"] },
+              "right": { "type": "string", "enum": ["yes", "no"] }
+            }
+          },
+          "incoming": {
+            "type": "object",
+            "description": "导弹传感器 - 检测来袭导弹方向",
+            "properties": {
+              "forward": { "type": "string", "enum": ["yes", "no"] },
+              "backward": { "type": "string", "enum": ["yes", "no"] },
+              "left": { "type": "string", "enum": ["yes", "no"] },
+              "right": { "type": "string", "enum": ["yes", "no"] }
+            }
+          },
+          "radar": {
+            "type": "object",
+            "description": "雷达传感器 - 探测前方扇形区域",
+            "properties": {
+              "energy": { "type": "array", "description": "能量站列表" },
+              "health": { "type": "array", "description": "维修站列表" },
+              "ammo": { "type": "array", "description": "弹药箱列表" },
+              "tree": { "type": "array", "description": "树障碍物列表" },
+              "stone": { "type": "array", "description": "石头障碍物列表" },
+              "open": { "type": "array", "description": "空地列表" },
+              "tank": { "type": "array", "description": "坦克列表" }
+            }
+          },
+          "rwave": {
+            "type": "object",
+            "description": "雷达波传感器 - 检测被雷达扫描的方向",
+            "properties": {
+              "forward": { "type": "string", "description": "no 或队伍颜色" },
+              "backward": { "type": "string" },
+              "left": { "type": "string" },
+              "right": { "type": "string" }
+            }
+          },
+          "smell": {
+            "type": "object",
+            "description": "气味传感器 - 感知最近坦克",
+            "properties": {
+              "color": { "type": "string", "nullable": true },
+              "distance": { "type": "integer", "nullable": true }
+            }
+          },
+          "sound": {
+            "type": "string",
+            "description": "声音传感器 - 感知最近移动坦克的方向 (silent/forward/backward/left/right)"
+          },
+          "visual": {
+            "type": "array",
+            "description": "视觉传感器 - 周围1-2格内的坦克"
+          },
+          "communication": {
+            "type": "array",
+            "description": "内部通信 - 同队友军坦克信息",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "integer" },
+                "x": { "type": "integer" },
+                "y": { "type": "integer" },
+                "direction": { "type": "string" },
+                "health": { "type": "integer" },
+                "energy": { "type": "integer" },
+                "missiles": { "type": "integer" },
+                "alive": { "type": "boolean" },
+                "distance": { "type": "integer" },
+                "relative_direction": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "页面",
+      "description": "页面路由"
+    },
+    {
+      "name": "系统",
+      "description": "系统接口"
+    },
+    {
+      "name": "游戏",
+      "description": "游戏相关接口"
+    }
+  ],
+  "x-websocket-events": {
+    "description": "WebSocket 事件说明",
+    "client-to-server": {
+      "game:init": "初始化游戏",
+      "game:start": "开始游戏",
+      "game:pause": "暂停游戏",
+      "game:step": "执行一步",
+      "game:reset": "重置游戏",
+      "game:auto": "自动运行模式"
+    },
+    "server-to-client": {
+      "connected": "连接成功确认",
+      "game:state": "游戏状态更新",
+      "game:started": "游戏开始通知",
+      "game:paused": "游戏暂停通知",
+      "game:reset": "游戏重置通知",
+      "game:over": "游戏结束通知",
+      "game:error": "错误消息"
+    }
+  }
+}
